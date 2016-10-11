@@ -1,0 +1,160 @@
+//
+//  homework.cpp
+//  链表
+//
+//  Created by Speed！ on 16/10/9.
+//  Copyright © 2016年 Speed！. All rights reserved.
+//
+
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
+struct node {
+	int element;        //结点元素
+	node* next;
+	int  no;                //元素序号
+};
+
+
+//-----------------------------------------------------
+class link_list {
+public:
+	node* head;
+	node* curr;
+	int cnt;                //链表规模
+
+
+							//初始化方法
+	link_list(int a[], int n) {
+		if (n == 1) head->next = NULL;
+		int i;
+		head = new node;
+		curr = head;
+		for (i = 0; i < n; i++) {
+			curr->element = a[i];
+			if (i <= n - 2)
+			{
+				curr->next = new node;
+				curr = curr->next;
+			}
+			else curr->next = NULL;
+		}
+	}
+
+	//向后插入新结点
+	void insert(const int it) {
+		static node* temp = new node;
+		temp->element = it;
+		temp->next = curr->next;
+		curr->next = temp;
+		cnt++;
+	}
+
+	//将 curr 挪到开头
+	void moveToStart() { curr = head; }
+
+	//将 curr 挪到尾部
+	void moveToTail() {
+		while (curr->next != NULL)
+		{
+			curr = curr->next;
+		}
+	}
+
+
+	//挪到指定位置
+	void moveToPos(int pos)
+	{
+		curr = head;
+		for (int i = 1; i < pos; i++)
+			curr = curr->next;
+	}
+
+	//给结点排编号
+	void setNo() {
+		this->moveToStart();
+		int i = 1;
+		while (curr != NULL) { curr->no = i; i++; if (curr->next != NULL)curr = curr->next; else break; }
+	}
+
+	//打印元素值
+	void print() {
+		this->moveToStart();
+		while (curr != NULL)
+		{
+			cout << curr->element << " ";    curr = curr->next;
+		}
+	}
+
+
+
+};
+
+//快速排序
+void qsort_1(link_list l, int low, int high) {
+	if (low > high) { return; }
+
+	int key;
+	int i = low; int j = high;
+
+	l.moveToPos(i);
+	key = l.curr->element;
+	
+	while (i != j) {
+		l.moveToPos(j);
+		while (i<j && l.curr->element >= key) { j--; l.moveToPos(j); if (i == j) break; }
+		if (i != j) {
+			int temp_r = l.curr->element;
+			l.moveToPos(i);
+			int temp_l = l.curr->element;
+			l.curr->element = temp_r;
+			l.moveToPos(j);
+			l.curr->element = temp_l;
+		}
+
+		l.moveToPos(i);
+		while (i<j && l.curr->element <= key) { i++; l.moveToPos(i); if (i == j) break; }
+		if (i != j) {
+			l.moveToPos(j);
+			int temp_r = l.curr->element;
+			l.moveToPos(i);
+			int temp_l = l.curr->element;
+			l.curr->element = temp_r;
+			l.moveToPos(j);
+			l.curr->element = temp_l;
+		}
+	
+	}
+	qsort_1(l, low, i - 1);
+	qsort_1(l, i + 1, high);
+}
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+int main() {
+	int a[10]; int b[10];
+	for (int i = 0; i < 10; i++)
+	{
+		a[i] = rand() % 100;
+		b[i] = rand() % 100;
+	}
+	link_list A(a,10); link_list B(b,10);
+
+	
+	//对接链表
+	A.moveToTail();
+	
+	A.curr->next = B.head;
+	A.setNo();
+
+	A.print();
+	cout << endl;
+
+
+	qsort_1(A, 1, 20);
+
+	A.print();
+
+
+}
